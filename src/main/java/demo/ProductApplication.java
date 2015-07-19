@@ -22,6 +22,8 @@ import org.springframework.data.rest.core.annotation.HandleAfterSave;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.stereotype.Component;
 
+import java.util.stream.IntStream;
+
 
 @SpringBootApplication
 public class ProductApplication {
@@ -90,11 +92,7 @@ public class ProductApplication {
 
     @Bean
     CommandLineRunner dummy(ProductRepository repository) {
-        return args -> {
-            repository.save(new Product("sku1", "description1", 10F));
-            repository.save(new Product("sku2", "description2", 5F));
-            repository.save(new Product("sku3", "description3", 11F));
-        };
-    }
+        return args ->
+                IntStream.range(0, 100).forEach(x -> repository.save(new Product("sku" + x, "description" + x, 10f)));    }
 }
 
