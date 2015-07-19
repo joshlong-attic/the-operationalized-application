@@ -27,4 +27,5 @@ project](http://github.com/spring-projects/spring-boot/) samples.  To run it, us
 ```sh
 docker-compose up
 ```
-
+Alternative, you could [try the instructions here](https://registry.hub.docker.com/u/dreampuf/metrilyx/). This will
+help you both install an OpenTSDB installation, but also install a Ticketmaster Metrilyx dashboard for OpenTSDB.

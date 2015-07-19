@@ -3,9 +3,10 @@ package demo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.actuate.autoconfigure.ExportMetricWriter;
 import org.springframework.boot.actuate.metrics.CounterService;
+import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.boot.actuate.metrics.opentsdb.DefaultOpenTsdbNamingStrategy;
 import org.springframework.boot.actuate.metrics.opentsdb.OpenTsdbMetricWriter;
 import org.springframework.boot.actuate.metrics.opentsdb.OpenTsdbNamingStrategy;
@@ -15,12 +16,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.annotation.HandleAfterCreate;
 import org.springframework.data.rest.core.annotation.HandleAfterDelete;
 import org.springframework.data.rest.core.annotation.HandleAfterSave;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.stream.IntStream;
 
@@ -29,31 +31,24 @@ import java.util.stream.IntStream;
 public class ProductApplication {
 
     public static void main(String[] args) {
-
         new SpringApplicationBuilder(ProductApplication.class)
                 .listeners(new ApplicationPidFileWriter())
                 .run(args);
-
     }
 
-    @Configuration
-    public static class MetricsConfiguration {
+    @Bean
+    @ExportMetricWriter
+    @ConfigurationProperties("metrics.export")
+    OpenTsdbMetricWriter openTsdbMetricWriter() {
+        OpenTsdbMetricWriter writer = new OpenTsdbMetricWriter();
+        writer.setNamingStrategy(namingStrategy());
+        return writer;
+    }
 
-        @Bean
-        @ConfigurationProperties("metrics.export")
-        MetricWriter openTsdbMetricWriter(
-                @Value("${opentsdb.url:http://localhost:4242}") String openTsdbUrl) {
-            OpenTsdbMetricWriter writer = new OpenTsdbMetricWriter();
-            writer.setNamingStrategy(namingStrategy());
-            writer.setUrl(openTsdbUrl);
-            return writer;
-        }
-
-        @Bean
-        @ConfigurationProperties("metrics.names")
-        OpenTsdbNamingStrategy namingStrategy() {
-            return new DefaultOpenTsdbNamingStrategy();
-        }
+    @Bean
+    @ConfigurationProperties("metrics.names")
+    OpenTsdbNamingStrategy namingStrategy() {
+        return new DefaultOpenTsdbNamingStrategy();
     }
 
     // add in custom metrics and tap into lifecycle events
@@ -62,11 +57,15 @@ public class ProductApplication {
     public static class ProductMetricsObserver {
 
         private Log log = LogFactory.getLog(getClass());
-        private final CounterService counterService;
+        private final GaugeService gaugeService;
+
+        private OpenTsdbMetricWriter metricWriter;
 
         @Autowired
-        public ProductMetricsObserver(CounterService counterService) {
-            this.counterService = counterService;
+        public ProductMetricsObserver(
+                GaugeService gaugeService, OpenTsdbMetricWriter metricWriter) {
+            this.gaugeService = gaugeService;
+            this.metricWriter = metricWriter;
         }
 
         @HandleAfterSave
@@ -85,14 +84,34 @@ public class ProductApplication {
         }
 
         private void log(String k, Product p) {
-            log.info(String.format("product %s: %s", k, p.toString()));
-            this.counterService.increment("products." + k);
+            this.log.info(String.format("product %s: %s", k, p.toString()));
+            this.gaugeService.submit("products." + k , System.currentTimeMillis() );
+            this.metricWriter.flush();
+        }
+    }
+
+
+    @RestController
+    public static class MessageRestController {
+
+        private final CounterService counterService;
+
+        @Autowired
+        public MessageRestController(CounterService counterService) {
+            this.counterService = counterService;
+        }
+
+        @RequestMapping("/message")
+        String message() {
+            this.counterService.increment("message.viewed");
+            return "Hello, world";
         }
     }
 
     @Bean
     CommandLineRunner dummy(ProductRepository repository) {
         return args ->
-                IntStream.range(0, 100).forEach(x -> repository.save(new Product("sku" + x, "description" + x, 10f)));    }
+                IntStream.range(0, 100).forEach(x -> repository.save(new Product("sku" + x, "description" + x, 10f)));
+    }
 }
 
