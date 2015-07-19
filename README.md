@@ -19,13 +19,12 @@ We'll look at:
 
 
 # Using OpenTSDB to see the metrics
+This example borrows from the sample in the Spring Boot codebase' samples directory.
+I am using Docker to stand up both OpenTSDB and the dashboard from Ticketmaster, Metrilyx.
 
-This example reports metrics to OpenTSDB. It expects to find OpenTSDB running on port 4242, on your localhost.
-I've included a Docker compose image (that I in turn borrowed from the [Spring Boot
-project](http://github.com/spring-projects/spring-boot/) samples.  To run it, use Docker compose:
+To get everything up and running, check out `opentsdb.sh` in the root of the directory.
+If you're not using `boot2docker` on OSX then comment out the second line and uncomment
+the third line of the shell script and then run it. [Here are the detailed instructions](https://registry.hub.docker.com/u/dreampuf/metrilyx/).
 
-```sh
-docker-compose up
-```
-Alternative, you could [try the instructions here](https://registry.hub.docker.com/u/dreampuf/metrilyx/). This will
-help you both install an OpenTSDB installation, but also install a Ticketmaster Metrilyx dashboard for OpenTSDB.
+You should be able to then point your browser to both `http://$BOOT2DOCkER_IP:4242/` for
+OpenTSDB and to `http://$BOOT2DOCKER_IP:8081` for the Metrilyx visualization.

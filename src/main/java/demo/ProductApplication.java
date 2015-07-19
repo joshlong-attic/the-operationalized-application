@@ -163,4 +163,3 @@ public class ProductApplication {
                 IntStream.range(0, 100).forEach(x -> repository.save(new Product("sku" + x, "description" + x, 10f)));
     }
 }
-

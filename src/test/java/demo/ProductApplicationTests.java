@@ -9,7 +9,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ProductApplication.class)
 @WebAppConfiguration
-public class CartApplicationTests {
+public class ProductApplicationTests {
 
 	@Test
 	public void contextLoads() {
