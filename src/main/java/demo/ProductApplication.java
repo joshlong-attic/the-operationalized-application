@@ -5,21 +5,23 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.actuate.metrics.CounterService;
+import org.springframework.boot.actuate.metrics.opentsdb.DefaultOpenTsdbNamingStrategy;
+import org.springframework.boot.actuate.metrics.opentsdb.OpenTsdbMetricWriter;
+import org.springframework.boot.actuate.metrics.opentsdb.OpenTsdbNamingStrategy;
+import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.boot.actuate.system.ApplicationPidFileWriter;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.annotation.HandleAfterCreate;
 import org.springframework.data.rest.core.annotation.HandleAfterDelete;
 import org.springframework.data.rest.core.annotation.HandleAfterSave;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.stereotype.Component;
 
-/**
- * This example is:
- * - self describing using HAL
- * -
- */
+
 @SpringBootApplication
 public class ProductApplication {
 
@@ -31,6 +33,23 @@ public class ProductApplication {
 
     }
 
+    @Configuration
+    public static class MetricsConfiguration {
+
+        @Bean
+        @ConfigurationProperties("metrics.export")
+        MetricWriter openTsdbMetricWriter() {
+            OpenTsdbMetricWriter writer = new OpenTsdbMetricWriter();
+            writer.setNamingStrategy(namingStrategy());
+            return writer;
+        }
+
+        @Bean
+        @ConfigurationProperties("metrics.names")
+        OpenTsdbNamingStrategy namingStrategy() {
+            return new DefaultOpenTsdbNamingStrategy();
+        }
+    }
 
     // add in custom metrics and tap into lifecycle events
     @Component
