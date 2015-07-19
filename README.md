@@ -7,15 +7,16 @@ We'll look at:
 * recording and reporting of application state (like `/trace`, and `/health`) through the Spring Boot Actuator framework
 * using the Spring Boot Actuator metrics support to generate and expose custom metrics  
 * how to build joined-up views of those metrics thanks to tools like Graphite and OpenTSDB
-* logging and the `/logfile` endpoint?
+* succinctly describing deployment metadata using a manifest.yml or a Dockerfile
 * 12-factor app style configuration
 * building APIs that are easy to understand with HAL and the HAL Browser
+* optimizing for continuous delivery by exporting the Git commit ID in the `/info` endpoint, exposing something like SolarMetrics
 * integrating security concerns like HTTP(S).
 * application deployment: executable `.jar`s, PID files,
+
 * how to get scale for things like HTTP session state using Spring Session.
-* optimizing for continuous delivery by exporting the Git commit ID in the `/info` endpoint, exposing something like SolarMetrics
 * database migrations with `/flyway` and `/liquibase`
-* succinctly describing deployment metadata using a manifest.yml or a Dockerfile
+* logging and the `/logfile` endpoint?
 
 
 # Using OpenTSDB to see the metrics
