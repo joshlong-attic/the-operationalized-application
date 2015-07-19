@@ -160,6 +160,6 @@ public class ProductApplication {
     @Bean
     CommandLineRunner dummy(ProductRepository repository) {
         return args ->
-                IntStream.range(0, 100).forEach(x -> repository.save(new Product("sku" + x, "description" + x, 10f)));
+            IntStream.range(0, 100).forEach(x -> repository.save(new Product("sku" + x, "description" + x, 10f)));
     }
 }
