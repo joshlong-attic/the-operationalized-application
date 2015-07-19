@@ -17,7 +17,7 @@
     </parent>
 
     <properties>
-        <docker.image.prefix>products</docker.image.prefix>
+        <docker.image.prefix>starbuxman</docker.image.prefix>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
     </properties>
@@ -91,7 +91,9 @@
                 <executions>
                     <execution>
                         <phase>install</phase>
-                        <goals><goal>build</goal></goals>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
                     </execution>
                 </executions>
                 <configuration>

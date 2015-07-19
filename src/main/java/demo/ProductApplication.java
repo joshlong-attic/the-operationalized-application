@@ -3,6 +3,7 @@ package demo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.opentsdb.DefaultOpenTsdbNamingStrategy;
@@ -38,9 +39,11 @@ public class ProductApplication {
 
         @Bean
         @ConfigurationProperties("metrics.export")
-        MetricWriter openTsdbMetricWriter() {
+        MetricWriter openTsdbMetricWriter(
+                @Value("${opentsdb.url:http://localhost:4242}") String openTsdbUrl) {
             OpenTsdbMetricWriter writer = new OpenTsdbMetricWriter();
             writer.setNamingStrategy(namingStrategy());
+            writer.setUrl(openTsdbUrl);
             return writer;
         }
 
@@ -54,13 +57,13 @@ public class ProductApplication {
     // add in custom metrics and tap into lifecycle events
     @Component
     @RepositoryEventHandler
-    public static class ProductMetricObserver {
+    public static class ProductMetricsObserver {
 
         private Log log = LogFactory.getLog(getClass());
         private final CounterService counterService;
 
         @Autowired
-        public ProductMetricObserver(CounterService counterService) {
+        public ProductMetricsObserver(CounterService counterService) {
             this.counterService = counterService;
         }
 
