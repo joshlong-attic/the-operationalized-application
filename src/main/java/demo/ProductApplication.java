@@ -42,7 +42,7 @@ public class ProductApplication {
                 .run(args);
     }
 
-    public static class ApplicationSickEvent extends ApplicationEvent {
+    public static class SickApplicationEvent extends ApplicationEvent {
 
         private Exception exception;
 
@@ -50,20 +50,20 @@ public class ProductApplication {
             return exception;
         }
 
-        public ApplicationSickEvent(Exception e) {
+        public SickApplicationEvent(Exception e) {
             super(e);
             this.exception = e;
         }
     }
 
     @Component("productHealthIndicator")
-    public static class ProductHealthIndicator implements HealthIndicator, ApplicationListener<ApplicationSickEvent> {
+    public static class ProductHealthIndicator implements HealthIndicator, ApplicationListener<SickApplicationEvent> {
 
         private volatile Exception exception;
 
         @Override
-        public void onApplicationEvent(ApplicationSickEvent applicationSickEvent) {
-            this.exception = applicationSickEvent.getException();
+        public void onApplicationEvent(SickApplicationEvent sickApplicationEvent) {
+            this.exception = sickApplicationEvent.getException();
         }
 
         @Override
@@ -147,7 +147,7 @@ public class ProductApplication {
         @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
         void sick() {
             this.applicationEventPublisher.publishEvent(
-                    new ApplicationSickEvent(new RuntimeException("I'm not a teapot!")));
+                    new SickApplicationEvent(new RuntimeException("I'm not a teapot!")));
         }
 
         @RequestMapping("/message")
