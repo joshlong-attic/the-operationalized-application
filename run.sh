@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker run -e STATSD_HOST=$STATSD_HOST -e STATSD_PORT=$STATSD_PORT -e GRAPHITE_HOST=$GRAPHITE_HOST -e GRAPHITE_PORT=$GRAPHITE_PORT starbuxman/product-service

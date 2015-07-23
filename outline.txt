@@ -1,0 +1,68 @@
+# The Operationalized Application
+
+* start.spring.io and choose the 1.3 bits (demo curl!)
+* build a simple JPA repository
+* export it as a REST endpoint w/ annotations
+* change the server to Jetty
+* stand up the Spring Boot Actuator bits
+* move management to diff context-path
+* make the Health endpoint respond to failure modes in the application
+* git commit ID in the /info endpoint
+
+<plugin>
+      <groupId>pl.project13.maven</groupId>
+      <artifactId>git-commit-id-plugin</artifactId>
+  </plugin>
+
+TODO RUN mvn clean install !!!!
+and
+
+<resources>
+     <resource>
+         <directory>src/main/resources</directory>
+         <filtering>true</filtering>
+     </resource>
+ </resources>
+
+info.build.artifact=${project.artifactId}
+info.build.version=${project.version}
+
+
+
+* org.springframework.boot:spring-boot-actuator-docs  &&& endpoints.hal.path=/hal &&  add org.webjars:hal-browser:*
+* collect custom business metrics using the counter/meter service
+* expose a custom REST endpoint that can be instrumented using @RepositoryEventHandler and @HandlerAfter*(T t)
+* customize the actuator endpoints and use a custom counterService in the custom
+  REST endpoint and the Spring Data REST endpoint
+* configure custom reporters / writers using DW Metrics and raw Actuator: io.dropwizard.metrics:metrics-graphite && com.timgroup:java-statsd-client
+* docker-compose up
+* what about stuff you can't monitor in terms of numbers: meters, counters, gauges, etc.
+* logback.xml:    net.logstash.logback:¸logstash-logback-encoder : 4.2
+  private static Logger LOGGER = LoggerFactory.getLogger( ProductApplication.class);
+  LogstashMarker logstashMarker = Markers.append( "event", "products." + k)
+  LOGGER.info(logstashMarker, "products." + k);
+* server.ssl.*
+* write out a PID file
+* run the executable jar.
+* run the executable jar by delegating to -D, environment variables, etc.
+* run the executable _executable_ jar.
+* make the jar a Docker friendly thing.
+
+
+
+
+
+#!/bin/bash
+
+set -e
+
+seq 1000 | while read l ; do
+  curl -H "Content-Type: application/json" -d '{"sku":"sku1$l"}' http://localhost:8080/products   ;
+  s=`gshuf -i 1-10 -n 1`
+  echo 0.$s
+  sleep 0.$s
+done
+
+
+
+http://peter-on-java.blogspot.com/2013/12/importing-ssl-certificates-to-keystore.html
