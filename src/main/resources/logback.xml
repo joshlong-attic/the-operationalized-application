@@ -4,8 +4,6 @@
 
     <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
         <remoteHost>192.168.99.100</remoteHost>
-        <!--<port>5601</port>-->
-        <!--<port>9200</port>-->
         <port>10042</port>
 
         <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
