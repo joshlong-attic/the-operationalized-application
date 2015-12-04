@@ -15,23 +15,19 @@ public class Product {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Product{");
-        sb.append("id=").append(id);
-        sb.append(", sku='").append(sku).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return "Product{" + "id=" + id +
+                ", sku='" + sku + '\'' +
+                '}';
     }
 
     Product() { // why JPA why??
     }
 
     public Product(String sku) {
-
         this.sku = sku;
     }
 
     public Long getId() {
-
         return id;
     }
 

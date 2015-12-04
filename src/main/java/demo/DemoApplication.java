@@ -55,14 +55,14 @@ public class DemoApplication {
 
         return reporter;
     }
-
+/*
     @Bean
     @ExportMetricWriter
     StatsdMetricWriter statsdMetricWriter(
             @Value("${statsd.host}") String host,
             @Value("${statsd.port}") int port) {
         return new StatsdMetricWriter("statsd-products", host, port);
-    }
+    }*/
 
 
     @Bean
